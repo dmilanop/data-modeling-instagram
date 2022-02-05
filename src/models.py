@@ -8,26 +8,47 @@ from eralchemy import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+class User(Base):
+    __tablename__ = 'user'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(100), nullable=False, unique=False)
+    last_name = Column(String(150), nullable=False, unique=False)
+    email = Column(String(200), nullable=False, unique=False)
+    user_name = Column(String(50), nullable=False, unique=True)
+    password = Column(String(200), nullable=False, unique=True)
+    feed_profile = relationship("Feed_Profile")
+    home_profile = relationship("Home_Profile")
+    new_post = relationship("New_Post")
 
-class Address(Base):
-    __tablename__ = 'address'
+class Feed_Profile(Base):
+    __tablename__ = 'feed_profile'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    publications_id = Column(Integer, primary_key=False)
+    comment_id = Column(Integer, primary_key=False)
+    post_id = Column(Integer, primary_key=False)
 
     def to_dict(self):
         return {}
+
+class Home_Profile(Base):
+    __tablename__ = 'home_profile'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    followers = Column(Integer, nullable=False, unique=False)
+    followed = Column(Integer, nullable=False, unique=False)
+
+class New_Post(Base): 
+    __tablename__ = 'new_post'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, nullable=False, unique=True)
+    likes = Column(Integer, nullable=False)
+
 
 ## Draw from SQLAlchemy base
 try:
